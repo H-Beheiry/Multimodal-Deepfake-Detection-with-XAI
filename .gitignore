@@ -1,0 +1,18 @@
+# Ignore Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore datasets folder
+datasets/
+
+# Ignore YAML environment files
+*.yml
+
+# Ignore your Conda environment folder
+dfd_env/
+
+# Ignore Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+

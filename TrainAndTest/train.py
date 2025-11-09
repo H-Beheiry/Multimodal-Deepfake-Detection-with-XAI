@@ -20,6 +20,6 @@ def train_one_epoch(model, data_loader, loss_fn, optimiser, device):
 def train(model, data_loader, loss_fn, optimiser, device, epochs):
     model= model.to(device)
     for i in range(epochs):
-        print(f"epoch {i}")
+        print(f"epoch {i+1}")
         train_one_epoch(model, data_loader, loss_fn, optimiser, device)
     print("train completem :)")

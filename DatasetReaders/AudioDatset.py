@@ -17,7 +17,7 @@ class AudioDataset(Dataset):
         self.device= device
         self.all_files= self.real_audio_files + self.fake_audio_files
         self.labels = [0]*len(self.real_audio_files) + [1]*len(self.fake_audio_files)
-        self.transformation= transformation
+        self.transformation= transformation.to(self.device)
         self.target_sample_rate= target_sample_rate
         self.num_samples= num_samples
     

@@ -20,7 +20,7 @@ class AudioDataset(Dataset):
         self.transformation= transformation.to(self.device)
         self.target_sample_rate= target_sample_rate
         self.num_samples= num_samples
-        self.AudioPreprocesser= AudioPreprocesser(transformation,target_sample_rate,num_samples,device)
+        self.audio_preprocesser= AudioPreprocesser(transformation,target_sample_rate,num_samples,device)
     
     def __len__(self):
         return len(self.all_files)

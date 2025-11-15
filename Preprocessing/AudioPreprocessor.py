@@ -47,10 +47,14 @@ class AudioPreprocesser():
             signal= signal[:, :self.num_samples]
         return signal
 
-    def plot_amp_time(self,signal=self.orignal_signal, sr=self.orignal_sr):
+    def plot_amp_time(self,signal=None, sr=None):
+        if signal is None:
+            signal = self.orignal_signal
+        if sr is None:
+            sr = self.orignal_sr
         self.duration= torch.arange(signal.shape[-1]) / sr
         fig, ax= plt.subplots(figsize=(5,5))
-        ax.plot(self.duration, signal.numpy())
+        ax.plot(self.duration, signal.squeeze().numpy())
         ax.set_xlabel("time")
         ax.set_ylabel("amplitude")
         return fig, ax

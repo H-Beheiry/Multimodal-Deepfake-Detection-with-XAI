@@ -26,6 +26,6 @@ class AudioDataset(Dataset):
         return len(self.all_files)
     
     def __getitem__(self,index):
-        signal= self.audio_preprocesser.Preprocess(self.all_files[index])
+        signal= self.audio_preprocesser.preprocess(self.all_files[index])
         label= torch.tensor(self.labels[index])
         return signal, label

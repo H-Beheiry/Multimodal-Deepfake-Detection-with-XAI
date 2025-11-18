@@ -1,11 +1,11 @@
 import torchaudio
 import captum
 import torch
-from XAI import ExplinationPipeline
+from Explanations.XAI import ExplanationPipeline
 
 class AudioExplainer():
     def __init__(self, audio_input, model):
-        self.attributes= ExplinationPipeline(model).explain(audio_input)
+        self.attributes= ExplanationPipeline(model).explain(audio_input)
     
     def process_explination(self,HOP_DURATION=0.004):
         results=[]
@@ -44,5 +44,4 @@ class AudioExplainer():
             result= [[x * HOP_DURATION, y * HOP_DURATION] for x, y in result]
             results.append(result)
         return results
-
             

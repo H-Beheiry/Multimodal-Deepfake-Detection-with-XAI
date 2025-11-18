@@ -23,7 +23,7 @@ def deeplift_explanation(input_tensor, forward_func):
     attributions= deeplift.attribute(input_tensor, baselines=baseline, target=1)
     return attributions
 
-class ExplinationPipeline:
+class ExplanationPipeline:
     def __init__(self,model):
         self.forward_func= make_forward_func(model)
 
@@ -31,7 +31,8 @@ class ExplinationPipeline:
         return {
             "shap": saliency_explination(input_tensor , self.forward_func),
             "gradshap": gradshap_explination(input_tensor , self.forward_func),
-            "deeplift": deeplift_explination(input_tensor , self.forward_func),
+            # "deeplift": deeplift_explanation(input_tensor , self.forward_func),
         }
 
 # TODO: add a way to select explainers
+# TODO: add More Explination methods

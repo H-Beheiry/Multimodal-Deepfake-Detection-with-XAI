@@ -1,18 +1,23 @@
-import torchaudio
-import torch
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
+from Explanations.audioXAI import AudioExplainer
 import matplotlib.pyplot as plt
 import numpy as np
+import torchaudio
+import torch
 
 # TODO: Check how the audio input will be taken
 
-class AudioPreprocesser():
+class AudioHandler():
     def __init__(self, transformation, target_sample_rate, num_samples, device):
         self.device= device
         self.transformation= transformation.to(device)
         self.target_sample_rate= target_sample_rate
         self.num_samples= num_samples
     
-    def Preprocess(self,audio_file_path):
+    def preprocess(self,audio_file_path):
         self.orignal_signal, self.orignal_sr= torchaudio.load(audio_file_path)
         signal= self.orignal_signal.to(self.device) 
         signal= self.resample_if_needed(signal, self.orignal_sr)
@@ -52,11 +57,30 @@ class AudioPreprocesser():
             signal = self.orignal_signal
         if sr is None:
             sr = self.orignal_sr
+        if signal.shape[0]>1:
+            signal= signal.mean(dim=0)
         self.duration= torch.arange(signal.shape[-1]) / sr
-        fig, ax= plt.subplots(figsize=(5,5))
+        fig, ax= plt.subplots(figsize=(10,5))
         ax.plot(self.duration, signal.squeeze().numpy())
-        ax.set_xlabel("time")
-        ax.set_ylabel("amplitude")
+        ax.set_xlabel("Time /S")
+        ax.set_ylabel("Amplitude /Hz")
         return fig, ax
+
+    def plot_processed_explination(self, preprocessed_input,model):
+        ae= AudioExplainer(preprocessed_input, model)
+        processed_explinations= ae.process_explination()
+        figures= []
+        explination_methods= list(ae.attributes.keys())
+        for i, time_window in enumerate(processed_explinations):
+            fig, ax= self.plot_amp_time()
+            ax.set_title(f"Explanation from {explination_methods[i]}")
+            plt.close(fig)
+            for start_time, end_time in time_window:
+                ax.axvline(x=start_time, color='red', linestyle='-', linewidth=2)
+                ax.axvline(x=end_time, color='red', linestyle='-', linewidth=2)
+                ax.axvspan(start_time, end_time, color='red', alpha=0.2)
+            figures.append((fig, ax))
+        return figures
+            
         
         

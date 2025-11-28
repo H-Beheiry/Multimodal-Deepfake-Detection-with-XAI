@@ -62,11 +62,12 @@ class AudioHandler():
         self.duration= torch.arange(signal.shape[-1]) / sr
         fig, ax= plt.subplots(figsize=(10,5))
         ax.plot(self.duration, signal.squeeze().numpy())
+        ax.set_title("Original Audio Signal")
         ax.set_xlabel("Time /S")
         ax.set_ylabel("Amplitude /Hz")
         return fig, ax
 
-    def plot_processed_explination(self, preprocessed_input,model):
+    def plot_processed_explination(self, preprocessed_input,model,flag):
         ae= AudioExplainer(preprocessed_input, model)
         processed_explinations= ae.process_explination()
         figures= []
@@ -76,9 +77,9 @@ class AudioHandler():
             ax.set_title(f"Explanation from {explination_methods[i]}")
             plt.close(fig)
             for start_time, end_time in time_window:
-                ax.axvline(x=start_time, color='red', linestyle='-', linewidth=2)
-                ax.axvline(x=end_time, color='red', linestyle='-', linewidth=2)
-                ax.axvspan(start_time, end_time, color='red', alpha=0.2)
+                ax.axvline(x=start_time, color=flag, linestyle='-', linewidth=2)
+                ax.axvline(x=end_time, color=flag, linestyle='-', linewidth=2)
+                ax.axvspan(start_time, end_time, color=flag, alpha=0.2)
             figures.append((fig, ax))
         return figures
             

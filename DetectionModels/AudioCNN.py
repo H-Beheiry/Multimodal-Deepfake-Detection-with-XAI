@@ -6,6 +6,8 @@ class CNNnetwork(nn.Module):
     def __init__(self):
         super().__init__()
         # 5 conv blocks -> flatten layer -> linear layer 
+        self.dropout_dense= nn.Dropout(p=0.5)
+        self.dropout_conv= nn.Dropout(p=0.25)
         self.conv1= nn.Sequential(
             nn.Conv2d(in_channels=1,
                      out_channels=16,
@@ -52,14 +54,21 @@ class CNNnetwork(nn.Module):
             nn.MaxPool2d(kernel_size=2)
         )
         self.flatten= nn.Flatten()
-        self.linear= nn.Linear(33280,2)      
+        self.linear_block= nn.Sequential(
+            nn.Linear(33280, 128),
+            nn.ReLU(),
+            self.dropout_dense,
+            nn.Linear(128,2)
+        )    
         
     def forward(self, input_data):
         x= self.conv1(input_data)
         x= self.conv2(x)
         x= self.conv3(x)
+        x= self.dropout_conv(x)
         x= self.conv4(x)
+        x= self.dropout_conv(x)
         x= self.conv5(x)
         x= self.flatten(x)
-        logits= self.linear(x)
+        logits= self.linear_block(x)
         return logits

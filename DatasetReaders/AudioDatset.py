@@ -10,9 +10,9 @@ import os
 class AudioDataset(Dataset):
     def __init__(self, fake_audio_path, real_audio_path, transformation, target_sample_rate,num_samples, device, corrupted_files, AudioPreprocesser):
         super().__init__()
-        self.real_audio_files= [os.path.join(real_audio_path, file) for file in os.listdir(real_audio_path) if file.endswith('.wav')]
+        self.real_audio_files= [os.path.join(real_audio_path, file) for file in os.listdir(real_audio_path) if file.endswith('.wav') or file.endswith('.mp3')]
         self.real_audio_files=  [f for f in self.real_audio_files if os.path.basename(f) not in corrupted_files]
-        self.fake_audio_files= [os.path.join(fake_audio_path, file) for file in os.listdir(fake_audio_path) if file.endswith('.wav')]
+        self.fake_audio_files= [os.path.join(fake_audio_path, file) for file in os.listdir(fake_audio_path) if file.endswith('.wav') or file.endswith('.mp3')]
         self.fake_audio_files=  [f for f in self.fake_audio_files if os.path.basename(f) not in corrupted_files]
         self.device= device
         self.all_files= self.real_audio_files + self.fake_audio_files

@@ -22,8 +22,10 @@ class AudioPipeline(AudioHandler):
             pred= torch.argmax(logits).item()
             if pred==0:
                 label= "REAL"
+                self.flag= "green"
             else:
                 label= "FAKE"
+                self.flag= "red"
         return label
 
     def fig_to_img(self, fig):
@@ -34,7 +36,7 @@ class AudioPipeline(AudioHandler):
             return img
     
     def explain(self):
-        figs= self.plot_processed_explination(self.preprocessed_signal, self.model)
+        figs= self.plot_processed_explination(self.preprocessed_signal, self.model,self.flag)
         explanation_images = []
         for fig,_ in figs:
              img = self.fig_to_img(fig)

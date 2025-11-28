@@ -3,6 +3,7 @@ import torch
 
 def make_forward_func(model):
     def forward_func(x):
+        model.eval()
         return model(x)
     return forward_func
 

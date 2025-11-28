@@ -15,6 +15,7 @@ class AudioPipeline(AudioHandler):
         self.model= model
 
     def predict(self, audio_filepath):
+        self.model.eval()
         preprocessed_signal= self.preprocess(audio_filepath)
         self.preprocessed_signal= preprocessed_signal.unsqueeze(1)
         with torch.no_grad():

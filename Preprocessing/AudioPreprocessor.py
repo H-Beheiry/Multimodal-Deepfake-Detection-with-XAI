@@ -25,6 +25,9 @@ class AudioHandler():
         signal= self.right_pad_if_needed(signal)
         signal= self.cut_if_needed(signal)
         signal= self.transformation(signal)
+
+        signal= (signal - signal.min()) / (signal.max() - signal.min() + 1e-6)
+        
         return signal
 
     def resample_if_needed(self,signal,sr):

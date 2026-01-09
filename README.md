@@ -1,4 +1,4 @@
-Multimodal Deepfake Detection with XAI
+# Multimodal Deepfake Detection with XAI
 
 ![Status](https://img.shields.io/badge/Status-Work_in_Progress-yellow)
 ![Language](https://img.shields.io/badge/Language-Python%20%7C%20Jupyter-blue)

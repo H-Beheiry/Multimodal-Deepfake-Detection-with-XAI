@@ -4,7 +4,7 @@
 ![Language](https://img.shields.io/badge/Language-Python%20%7C%20Jupyter-blue)
 ![University](https://img.shields.io/badge/UFE-Professional_Project-red)
 
-> * Note:** This project is currently under active development. Features and documentation are subject to change.
+>  Note: This project is currently under active development. Features and documentation are subject to change.
 
 This repository hosts the source code for a **Multimodal Deepfake Detection System**, developed as part of the **Professional Project Course** at the **Université française d'Égypte (UFE)**.
 The system aims to detect manipulated media by analyzing both **visual** and **auditory** cues. It integrates **Explainable AI (XAI)** techniques to provide transparent reasoning behind its detection results, helping users understand *why* a specific media file was flagged as fake.

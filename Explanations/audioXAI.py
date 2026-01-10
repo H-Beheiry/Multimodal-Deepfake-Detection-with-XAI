@@ -19,7 +19,7 @@ class AudioExplainer():
             lengths = []
             count = 1
             for i in range(1, len(mean_max_cols_idx)):
-                if mean_max_cols_idx[i] - mean_max_cols_idx[i-1]<= 3:
+                if mean_max_cols_idx[i] - mean_max_cols_idx[i-1]<= 2:
                     count+= 1
                 else:
                     lengths.append(count)

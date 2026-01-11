@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 
-def load_paths(csv_path,dataset_path):
+def load_folder_paths(csv_path,dataset_path):
     real_video_real_audio_paths= []
     fake_video_real_audio_paths= []
     real_video_fake_audio_paths= []

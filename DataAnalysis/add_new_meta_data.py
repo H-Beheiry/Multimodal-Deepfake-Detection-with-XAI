@@ -19,15 +19,23 @@ def load_videos(csv_path,dataset_path):
         if "RealVideo-RealAudio" in full_path:
             video_type= "RVRA"
             video_class= 0
+            audio_class= 0
+            overall_class=0
         elif "FakeVideo-RealAudio" in full_path:
             video_type= "FVRA"
             video_class= 1
+            audio_class= 0
+            overall_class= 1
         elif "RealVideo-FakeAudio" in full_path:
             video_type= "RVFA"
-            video_class= 1
+            video_class= 0
+            audio_class= 1
+            overall_class= 1
         elif "FakeVideo-FakeAudio" in full_path:
             video_type= "FVFR"
             video_class= 1
+            audio_class= 1
+            overall_class= 1
 
         try:
             with av.open(full_path) as container:
@@ -54,6 +62,8 @@ def load_videos(csv_path,dataset_path):
             "method":row["method"],
             "video_type":video_type,
             "video_class":video_class,
+            "audio_class":audio_class,
+            "overall_class":overall_class,
             "race": row["race"],
             "gender": row["gender"],
             "path": full_path,
@@ -69,6 +79,6 @@ def load_videos(csv_path,dataset_path):
         })
         
     return pd.DataFrame(dataset_properties)
-    
-new_meta_data= load_videos(csv_path,dataset_path)
-new_meta_data.to_csv("new_meta_data.csv",index=False)
+if __name__ == "__main__": 
+    new_meta_data= load_videos(csv_path,dataset_path)
+    new_meta_data.to_csv("new_meta_data.csv",index=False)

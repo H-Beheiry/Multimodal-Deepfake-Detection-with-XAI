@@ -4,9 +4,9 @@ import torch
 import os
 
 class VideoDataset(Dataset):
-    def __init__(self,dataset_df,VideoPreprocessor,device):
-        self.dataset_df= dataset_df
-        self.device= device
+    def __init__(self,dataset_df,VideoPreprocessor):
+        super().__init__()
+        self.dataset_df= dataset_df.reset_index(drop=True)
         self.VideoPreprocessor= VideoPreprocessor
     def __len__(self):
         return len(self.dataset_df)

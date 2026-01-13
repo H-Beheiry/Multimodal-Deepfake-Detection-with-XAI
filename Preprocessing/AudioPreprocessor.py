@@ -6,7 +6,9 @@ from Explanations.audioXAI import AudioExplainer
 import matplotlib.pyplot as plt
 import numpy as np
 import torchaudio
+import random
 import torch
+import av
 
 # TODO: Check how the audio input will be taken
 
@@ -14,16 +16,16 @@ class AudioHandler():
     def __init__(self, transformation, target_sample_rate, num_samples, device):
         self.device= device
         self.transformation= transformation.to(device)
+        self.tau= tau
         self.target_sample_rate= target_sample_rate
-        self.num_samples= num_samples
+        self.num_samples= int(tau * target_sample_rate)
     
     def preprocess(self,audio_file_path):
-        self.orignal_signal, self.orignal_sr= torchaudio.load(audio_file_path)
+        self.orignal_signal, self.orignal_sr= self._get_signal(audio_file_path)
         signal= self.orignal_signal.to(self.device) 
         signal= self.resample_if_needed(signal, self.orignal_sr)
+        signal= self.sample_audio(signal)
         signal= self.mix_down_if_needed(signal)
-        signal= self.right_pad_if_needed(signal)
-        signal= self.cut_if_needed(signal)
         signal= self.transformation(signal)
 
         signal= (signal - signal.min()) / (signal.max() - signal.min() + 1e-6)
@@ -42,17 +44,25 @@ class AudioHandler():
             signal= torch.mean(signal, dim=0, keepdim=True)
         return signal
 
-    def right_pad_if_needed(self,signal):
-        length_of_signal= signal.shape[1]
-        if length_of_signal < self.num_samples:
-            num_missing_samples= self.num_samples - length_of_signal
-            last_dim_padding= (0,num_missing_samples)
-            signal= torch.nn.functional.pad(signal, last_dim_padding)
-        return signal
-    
-    def cut_if_needed(self,signal):
-        if signal.shape[1]> self.num_samples:
-            signal= signal[:, :self.num_samples]
+    def _get_signal(self,path):
+        if path.lower().endswith(('.mp4', '.avi', '.mov')):
+            with av.open(path) as container:
+                stream = container.streams.audio[0]
+                resampler = av.AudioResampler(format='fltp', layout='mono', rate=self.target_sample_rate)  
+                frames = []
+                for frame in container.decode(stream):
+                    frames.extend(resampler.resample(frame))
+                signal_np = np.concatenate([f.to_ndarray() for f in frames], axis=1)
+                signal = torch.from_numpy(signal_np).float()
+                return signal, self.target_sample_rate
+        else:
+                return torchaudio.load(path)
+    def sample_audio(self,signal):
+        total_samples= signal.shape[1]
+        max_start= total_samples - self.num_samples
+        start_sample= random.randint(0, max_start)
+        end_sample= start_sample + self.num_samples
+        signal= signal[:, start_sample:end_sample]
         return signal
 
     def plot_amp_time(self,signal=None, sr=None):
@@ -86,5 +96,3 @@ class AudioHandler():
             figures.append((fig, ax))
         return figures
             
-        
-        

@@ -10,7 +10,7 @@ import random
 import torch
 import av
 
-# TODO: Check how the audio input will be taken
+# TODO: Add padding if needed and cutting if needed ..... and an infrence mode
 
 class AudioHandler():
     def __init__(self, transformation, target_sample_rate, num_samples, device):

@@ -26,7 +26,7 @@ def train_one_epoch(model, data_loader, loss_fn, optimiser, device):
     print(f"loss: {total_loss/len(data_loader)}")
     return total_loss/len(data_loader)
 
-def train(model, train_data_loader, loss_fn, optimiser, device, epochs, early_stopper, val_data_loader):
+def train(model, train_data_loader, loss_fn, optimiser, device, epochs, early_stopper, val_data_loader,scheduler=None):
     train_loss_history= []
     val_loss_history= []
     best_val_loss= float('inf')
@@ -47,6 +47,10 @@ def train(model, train_data_loader, loss_fn, optimiser, device, epochs, early_st
         if early_stopper.early_stop:
             print("Early Stopping Triggered")
             break
+        if scheduler:
+            scheduler.step(val_loss)
+            current_lr = scheduler.get_last_lr()[0]
+            print(f"Current Learning Rate: {current_lr:.6f}")
     print("train complete :)")
     return train_loss_history, val_loss_history
 

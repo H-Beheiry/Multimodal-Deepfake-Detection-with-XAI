@@ -13,7 +13,7 @@ import av
 # TODO: Add padding if needed and cutting if needed ..... and an infrence mode
 
 class AudioHandler():
-    def __init__(self, transformation, target_sample_rate, num_samples, device):
+    def __init__(self, transformation, target_sample_rate,tau, device):
         self.device= device
         self.transformation= transformation.to(device)
         self.tau= tau

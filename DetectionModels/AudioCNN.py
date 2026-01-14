@@ -53,9 +53,10 @@ class CNNnetwork(nn.Module):
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2)
         )
+
         self.flatten= nn.Flatten()
         self.linear_block= nn.Sequential(
-            nn.Linear(33280, 128),
+            nn.Linear(32000, 128),
             nn.ReLU(),
             self.dropout_dense,
             nn.Linear(128,2)

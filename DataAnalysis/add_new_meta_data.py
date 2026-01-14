@@ -59,6 +59,7 @@ def load_videos(csv_path,dataset_path):
 
         
         dataset_properties.append({
+            "id": row["source"],
             "method":row["method"],
             "video_type":video_type,
             "video_class":video_class,

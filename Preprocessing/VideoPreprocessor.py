@@ -25,7 +25,7 @@ class VideoHandler():
         vid= vid.permute(0, 3, 1, 2)
         vid= vid.to(self.device)
         vid= self.transformation(vid)
-        vid= vid.permute(3, 0, 1, 2)        # (T,H,W,C)
+        vid= vid.permute(1, 0, 2, 3)     # (T,H,W,C)
         return vid
     
     def sample_frames(self,vid):

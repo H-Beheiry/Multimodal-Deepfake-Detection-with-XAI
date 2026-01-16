@@ -1,39 +1,70 @@
 import torch
 import torchaudio.transforms as T
 import torch.nn as nn
+
 augmentation= nn.Sequential(
     T.FrequencyMasking(freq_mask_param=15),
     T.TimeMasking(time_mask_param=30)       
 )
 
-def train_one_epoch(model, data_loader, loss_fn, optimiser, device):
-    model.train()
-    total_loss=0
-    for inputs, targets in data_loader:
-        inputs = inputs.to(device)
-        targets = targets.to(device, dtype=torch.long)
+# def train_one_epoch(model, data_loader, loss_fn, optimiser,is_audio, device):
+#     for audio
+     # model.train()
+#     total_loss=0
+#     for inputs, targets in data_loader:
+#         inputs = inputs.to(device)
+#         targets = targets.to(device, dtype=torch.long)
         
-        ##calculate loss
-        inputs = augmentation(inputs) ##
-        predictions= model(inputs)
-        loss= loss_fn(predictions,targets)
+#         ##calculate loss
+#         if is_audio:
+#             inputs = augmentation(inputs) ##
+#         predictions= model(inputs)
+#         loss= loss_fn(predictions,targets)
 
-        ##backprop
-        optimiser.zero_grad() ##to reset the gradients to zero
-        loss.backward()      ## claculate weights
-        optimiser.step()     ##updates weights
-        total_loss+= loss.item()
+#         ##backprop
+#         # optimiser.zero_grad() ##to reset the gradients to zero
+#         loss.backward()      ## claculate weights
+#         optimiser.step()     ##updates weights
+#         total_loss+= loss.item()
+#     print(f"loss: {total_loss/len(data_loader)}")
+#     return total_loss/len(data_loader)
+
+
+def train_one_epoch(model, data_loader, loss_fn, optimiser, is_audio, device, accumulation_steps=8):
+    ## For Video
+    model.train()
+    total_loss= 0
+    optimiser.zero_grad() # Reset once at the start
+
+    for i, (inputs, targets) in enumerate(data_loader):
+        inputs= inputs.to(device)
+        targets= targets.to(device, dtype=torch.long)
+        
+        if is_audio:
+            inputs= augmentation(inputs)
+            
+        predictions= model(inputs)
+        loss= loss_fn(predictions, targets)
+        loss= loss / accumulation_steps
+        loss.backward()
+        if (i + 1) % accumulation_steps == 0:
+            optimiser.step()
+            optimiser.zero_grad()
+            
+        total_loss+= loss.item() * accumulation_steps 
+
     print(f"loss: {total_loss/len(data_loader)}")
     return total_loss/len(data_loader)
 
-def train(model, train_data_loader, loss_fn, optimiser, device, epochs, early_stopper, val_data_loader,scheduler=None):
+
+def train(model, train_data_loader, loss_fn, optimiser, device, epochs, early_stopper, val_data_loader,model_name,is_audio,scheduler=None):
     train_loss_history= []
     val_loss_history= []
     best_val_loss= float('inf')
     model= model.to(device)
     for i in range(epochs):
         print(f"==========================\nepoch {i+1}")
-        train_loss= train_one_epoch(model, train_data_loader, loss_fn, optimiser, device)
+        train_loss= train_one_epoch(model, train_data_loader, loss_fn, optimiser,is_audio, device)
         val_loss= validate(model, val_data_loader, loss_fn, device)
 
         train_loss_history.append(train_loss)
@@ -41,7 +72,7 @@ def train(model, train_data_loader, loss_fn, optimiser, device, epochs, early_st
         
         if val_loss < best_val_loss:
             best_val_loss= val_loss
-            torch.save(model.state_dict(), "Audio_CNN.pth")
+            torch.save(model.state_dict(), model_name)
         
         early_stopper(val_loss)
         if early_stopper.early_stop:

@@ -20,8 +20,8 @@ class AudioPipeline(AudioHandler):
         self.preprocessed_signal= preprocessed_signal.unsqueeze(1)
         with torch.no_grad():
             logits= self.model(self.preprocessed_signal)
-            pred= torch.argmax(logits).item()
-            if pred==0:
+            self.pred= torch.argmax(logits).item()
+            if self.pred==0:
                 label= "REAL"
                 self.flag= "green"
             else:
@@ -37,7 +37,7 @@ class AudioPipeline(AudioHandler):
             return img
     
     def explain(self):
-        figs= self.plot_processed_explination(self.preprocessed_signal, self.model,self.flag)
+        figs= self.plot_processed_explination(self.preprocessed_signal, self.model,self.flag,self.pred)
         explanation_images = []
         for fig,_ in figs:
              img = self.fig_to_img(fig)
@@ -46,14 +46,14 @@ class AudioPipeline(AudioHandler):
         return explanation_images
 
     def run(self,audio_filepath):
-        pred= self.predict(audio_filepath)
+        label= self.predict(audio_filepath)
         raw_fig, _= self.plot_amp_time()
         original_fig= self.fig_to_img(raw_fig)
         plt.close(raw_fig)
         explination_figs= self.explain()
 
         return {
-            "prediction": pred,
+            "prediction": label,
             "signal": original_fig,
             "explination": explination_figs
         }

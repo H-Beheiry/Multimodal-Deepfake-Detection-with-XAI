@@ -32,7 +32,7 @@ def load_videos(csv_path,dataset_path):
             audio_class= 1
             overall_class= 1
         elif "FakeVideo-FakeAudio" in full_path:
-            video_type= "FVFR"
+            video_type= "FVFA"
             video_class= 1
             audio_class= 1
             overall_class= 1

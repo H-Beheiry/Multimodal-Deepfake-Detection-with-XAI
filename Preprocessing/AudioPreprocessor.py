@@ -20,11 +20,14 @@ class AudioHandler():
         self.target_sample_rate= target_sample_rate
         self.num_samples= int(tau * target_sample_rate)
     
-    def preprocess(self,audio_file_path):
+    def preprocess(self,audio_file_path,start_time=None):
         self.orignal_signal, self.orignal_sr= self._get_signal(audio_file_path)
         signal= self.orignal_signal.to(self.device) 
         signal= self.resample_if_needed(signal, self.orignal_sr)
-        signal= self.sample_audio(signal)
+        if start_time is None:
+            signal= self.sample_audio(signal)
+        else:
+            signal= self.sample_audio(signal,start_time)
         signal= self.mix_down_if_needed(signal)
         signal= self.transformation(signal)
 
@@ -47,29 +50,32 @@ class AudioHandler():
     def _get_signal(self,path):
         if path.lower().endswith(('.mp4', '.avi', '.mov')):
             with av.open(path) as container:
-                stream = container.streams.audio[0]
-                resampler = av.AudioResampler(format='fltp', layout='mono', rate=self.target_sample_rate)  
-                frames = []
+                stream= container.streams.audio[0]
+                resampler= av.AudioResampler(format='fltp', layout='mono', rate=self.target_sample_rate)  
+                frames= []
                 for frame in container.decode(stream):
                     frames.extend(resampler.resample(frame))
-                signal_np = np.concatenate([f.to_ndarray() for f in frames], axis=1)
-                signal = torch.from_numpy(signal_np).float()
+                signal_np= np.concatenate([f.to_ndarray() for f in frames], axis=1)
+                signal= torch.from_numpy(signal_np).float()
                 return signal, self.target_sample_rate
         else:
                 return torchaudio.load(path)
-    def sample_audio(self,signal):
+    def sample_audio(self,signal,start_time=None):
         total_samples= signal.shape[1]
         max_start= total_samples - self.num_samples
-        start_sample= random.randint(0, max_start)
+        if start_time is None:
+            start_sample= random.randint(0, max_start)
+        else:
+            start_sample= int(start_time * self.target_sample_rate)
         end_sample= start_sample + self.num_samples
         signal= signal[:, start_sample:end_sample]
         return signal
 
     def plot_amp_time(self,signal=None, sr=None):
         if signal is None:
-            signal = self.orignal_signal
+            signal= self.orignal_signal
         if sr is None:
-            sr = self.orignal_sr
+            sr= self.orignal_sr
         if signal.shape[0]>1:
             signal= signal.mean(dim=0)
         self.duration= torch.arange(signal.shape[-1]) / sr
@@ -80,8 +86,8 @@ class AudioHandler():
         ax.set_ylabel("Amplitude /Hz")
         return fig, ax
 
-    def plot_processed_explination(self, preprocessed_input,model,flag):
-        ae= AudioExplainer(preprocessed_input, model)
+    def plot_processed_explination(self, preprocessed_input,model,flag,pred):
+        ae= AudioExplainer(preprocessed_input, model,pred)
         processed_explinations= ae.process_explination()
         figures= []
         explination_methods= list(ae.attributes.keys())

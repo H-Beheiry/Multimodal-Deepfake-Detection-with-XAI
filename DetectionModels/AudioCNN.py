@@ -73,3 +73,18 @@ class CNNnetwork(nn.Module):
         x= self.flatten(x)
         logits= self.linear_block(x)
         return logits
+
+    def get_embedding(self, input_data):
+        x= self.conv1(input_data)
+        x= self.conv2(x)
+        x= self.conv3(x)
+        x= self.dropout_conv(x)
+        x= self.conv4(x)
+        x= self.dropout_conv(x)
+        x= self.conv5(x)
+        x= self.flatten(x)
+        x= self.linear_block[0](x)
+        x= self.linear_block[1](x)
+        x= self.linear_block[2](x)
+        return x
+        

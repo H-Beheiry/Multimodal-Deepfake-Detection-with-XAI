@@ -4,8 +4,8 @@ import torch
 from Explanations.XAI import ExplanationPipeline
 
 class AudioExplainer():
-    def __init__(self, audio_input, model):
-        self.attributes= ExplanationPipeline(model).explain(audio_input)
+    def __init__(self, audio_input, model,pred):
+        self.attributes= ExplanationPipeline(model).explain(audio_input,pred)
     
     def process_explination(self,HOP_DURATION=0.004):
         results=[]

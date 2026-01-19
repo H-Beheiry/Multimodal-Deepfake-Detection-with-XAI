@@ -1,5 +1,6 @@
 from captum.attr import Saliency, GradientShap, InputXGradient, IntegratedGradients, GuidedBackprop, LayerGradCam
 import torch.nn.functional as F
+import torch.nn as nn
 import torch
 
 def make_forward_func(model):
@@ -24,11 +25,22 @@ def integrated_gradients_explination(input_tensor, forward_func, pred):
     return attributions
 
 def layer_gradcam_explanation(input_tensor, forward_func, pred, model):
-    target_layer = model.backbone[0][-1]
-    lgc = LayerGradCam(forward_func, target_layer)
-    attributions = lgc.attribute(input_tensor, target=pred, relu_attributions=True)
-    target_h, target_w = input_tensor.shape[-2], input_tensor.shape[-1]
-    attributions = F.interpolate(
+    target_layer= None
+    if hasattr(model, 'backbone'):
+        try:
+            target_layer= model.backbone[0][-1]
+        except (IndexError, TypeError):
+            target_layer= model.backbone
+    else:
+        conv_layers= [m for m in model.modules() if isinstance(m, nn.Conv2d)]
+        if conv_layers:
+            target_layer= conv_layers[-1]
+        else:
+            raise ValueError(f"Could not find a backbone or any Conv2d layer in {type(model).__name__} for GradCAM.")
+    lgc= LayerGradCam(forward_func, target_layer)
+    attributions= lgc.attribute(input_tensor, target=pred, relu_attributions=True)
+    target_h, target_w= input_tensor.shape[-2], input_tensor.shape[-1]
+    attributions= F.interpolate(
         attributions, 
         size=(target_h, target_w), 
         mode='bilinear', 

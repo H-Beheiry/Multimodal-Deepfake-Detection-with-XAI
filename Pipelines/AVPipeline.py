@@ -4,8 +4,9 @@ import torch
 import matplotlib.pyplot as plt
 from PIL import Image
 import io
-from VideoPipeline import VideoPipeline
-from AudioPipeline import AudioPipeline
+
+from Pipelines.VideoPipeline import VideoPipeline
+from Pipelines.AudioPipeline import AudioPipeline
 
 class AVPipeline:
     def __init__(self, av_model, vid_transform, aud_transform, vid_params, aud_params, device="cpu"):

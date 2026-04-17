@@ -82,7 +82,7 @@ Code snippet
 ```
 @inproceedings{elbeheiry2026hilmdf,
   title={HIL-MDF: A Human-in-the-Loop Multimodal Deepfake Detection System},
-  author={El-Beheiry, Hamza and Abdulwagid, Mahmoud and Asmah, Ahmed and Moussa, Sherin and Zaher, Omar},
+  author={El-Beheiry, Hamza and Asmah, Ahmed and Zaher, Omar and Abdulwagid, Mahmoud and Moussa, Sherin},
   booktitle={IEEE International Conference on Smart Systems, Control, and Engineering Applications (IEEE 3SCEA2026)},
   year={2026}
 }
